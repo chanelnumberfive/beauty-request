@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>axios</title>
+  <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
+  <style type="text/css">
+    pre {
+      max-height: 200px;
+      min-height: 39px;
+      overflow: auto;
+    }
+  </style>
+</head>
+
+<body class="container">
+  <h1>beauty-request</h1>
+  <div class="well">
+    <button id="submit1" class="btn btn-primary">get</button>
+    <button id="submit2" class="btn btn-primary">post</button>
+    <button id="submit3" class="btn btn-primary">put</button>
+    <button id="submit4" class="btn btn-primary">delete</button>
+    <textarea style="margin-top:15px;" class="form-control" cols="30" rows="10"></textarea>
+  </div>
+  <script src="/beauty-request.js"></script>
+  <script>
+    (function (BeautyRequest) {
+      'use strict';
+      let request=new BeautyRequest.default();
+      request.init();
+      let vm = { _loading:{
+        code:-1,
+        message:''
+      }, _disabled: false };
+      Object.defineProperties(vm,{
+        loading:{
+          get:function(){
+            return this._loading;
+          },
+          set:function(value){
+            document.querySelector('textarea').value=JSON.stringify(value)
+            this._loading=value;
+          }
+        },
+        disabled:{
+          get:function(){
+            return this._disabled;
+          },
+          set:function(value){
+            document.querySelectorAll('button').forEach(function(button){
+              if(value) button.setAttribute('disabled',true);
+              if(!value) button.removeAttribute('disabled');
+            });
+            this._disabled=value;
+          }
+        }
+      })
+      for (let i = 1; i <= 4; i++) {
+        document.querySelector('#submit'+i).addEventListener('click', function () {
+          let method=['Get','Post','Put','Delete'][i-1];
+          request['beauty'+method]({
+            url: '/api',
+            progress:true,
+            successTip:'request success',
+            failTip:'request fail',
+          }, vm)
+        })
+      }
+    })(BeautyRequest)
+  </script>
+</body>
+
+</html>
