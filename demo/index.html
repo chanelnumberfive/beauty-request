@@ -26,7 +26,11 @@
   <script>
     (function (BeautyRequest) {
       'use strict';
-      let request=new BeautyRequest.default();
+      let request=new BeautyRequest.default({
+        on401:function(){
+          console.log(401);
+        }
+      });
       request.init();
       let vm = { _loading:{
         code:-1,
@@ -61,6 +65,12 @@
           request['beauty'+method]({
             url: '/api',
             progress:true,
+            success:function(){
+              console.log(success);
+            },
+            fail:function(){
+              console.log('fail');
+            },
             successTip:'request success',
             failTip:'request fail',
           }, vm)

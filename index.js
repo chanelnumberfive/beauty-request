@@ -10,6 +10,7 @@ const config = {
   message:function(message,type){
     alert(message)
   },
+  on401:function(){},
   successCode: [10000]
 };
 
@@ -67,10 +68,9 @@ BeautyRequest.prototype.beautyRequest = function (obj, vm, method, ajaxId) {
       setPageState(vm,200,'', obj);
       resolve(res.data);
     }).catch((error) => {
-      if (error !== 401) {
-        setPageState(vm,error,error,obj);
-        this.requestFail(error, obj);
-      }
+      if(error===401) (obj.on401||this.on401)();
+      setPageState(vm,error,error,obj);
+      this.requestFail(error, obj);
       reject(error);
     }).finally(function () {
       if (obj.finally) obj.finally();
@@ -152,10 +152,7 @@ BeautyRequest.prototype.init = function (token, host, tokenKey) {
     return response;
   }, function (error) {
     let status = error && error.response && error.response.status;
-    status=status||'405';
-    // 401 when unauthorization
-    // timeout when request timeout
-    if (status == 401) return location.href = '/login';
+    status=status||error;
     return Promise.reject(status);
   });
 };
